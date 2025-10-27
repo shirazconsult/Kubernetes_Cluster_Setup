@@ -1,0 +1,39 @@
+#cloud-config
+
+runcmd:
+  # a. Disable swap for the current session (immediate effect)
+  - 'swapoff -a'
+  # b. Comment out the swap entry in /etc/fstab for permanent disable
+  - 'sed -i "/ swap / s/^\(.*\)$/#\1/g" /etc/fstab'
+
+  # Loading netowrking modules required by Kubernetes... Step 1, 2 and 3
+  # ---------------------------------------
+  # 1. Load Kernel Modules and Ensure Persistence
+  # The overlay module is required if your Container Runtime Interface (CRI), such as Containerd, uses the overlay2 storage
+  # driver (which is the modern default).
+  # The br_netfilter module is absolutely critical. It ensures that network traffic going over a Linux bridge (like the cni0
+  # bridge created for containers) is correctly passed to the iptables packet filtering and NAT subsystem.
+  - 'modprobe overlay'
+  - 'modprobe br_netfilter'
+  - |
+    sudo tee /etc/modules-load.d/kubernetes-modules.conf <<EOF
+    overlay
+    br_netfilter
+    EOF
+  - |
+    sudo tee /etc/sysctl.d/99-kubernetes-k8s.conf <<EOF
+    net.bridge.bridge-nf-call-iptables = 1
+    net.ipv4.ip_forward = 1
+    net.bridge.bridge-nf-call-ip6tables = 1
+    EOF
+
+  # 3. Apply the Sysctl changes immediately
+  - 'sysctl --system'
+  # ---------------------------------------
+
+#cloud-config
+
+# Use bash as default
+users:
+  - name: ubuntu
+    shell: /bin/bash
