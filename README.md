@@ -16,7 +16,7 @@ insturcts the multipass to:
 1. Disable memory swap: We disable memory swap when setting up a Kubernetes cluster because **kubelet** (the primary 
 node agent) requires this to function predictably and reliably. Kubernetes is designed to manage resource limits 
 strictly, and swap memory interferes with this mechanism.
-2. Ensuring the two essential kernel modules, overlay and br_netfilter, are loaded automatically every time the system starts.
+2. Ensuring the two essential kernel modules, `overlay` and `br_netfilter`, are loaded automatically every time the system starts.
   * The _overlay_ module enables the **OverlayFS** file system. The OverlayFS is the most common and recommended storage driver 
     for container runtimes like _Docker_ and _Containerd_. By ensuring this module is loaded at boot, you guarantee 
     the container runtime can operate correctly.
