@@ -71,7 +71,7 @@ install-calico(){
   echo "Installing Calico network plugin: Explicit CR Creation"
   echo "###########################################"
 
-  POD_CIDR="10.244.0.0/16"
+  POD_CIDR="${DEFAULT_POD_CIDR}"
   OPERATOR_URL="https://docs.tigera.io/archive/v3.25/manifests/tigera-operator.yaml"
   CR_URL="https://docs.tigera.io/archive/v3.25/manifests/custom-resources.yaml"
 

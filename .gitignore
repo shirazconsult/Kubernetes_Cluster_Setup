@@ -1,5 +1,9 @@
 # .gitignore
 
+# IDE
+.idea/
+*.iml
+
 # Ignore temporary VM files and logs
 *.log
 *.err
