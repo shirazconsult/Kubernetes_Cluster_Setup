@@ -37,3 +37,12 @@ runcmd:
 users:
   - name: ubuntu
     shell: /bin/bash
+    # Define shell environment configuration for the user
+    write_files:
+      - path: /home/ubuntu/.bashrc
+        permissions: '0644'
+        owner: ubuntu:ubuntu
+        append: true  # Append to the existing .bashrc file
+        content: |
+          # Multipass custom alias
+          alias k='kubectl'

@@ -42,13 +42,38 @@ This script is the main bash script for setting up the cluster. It basically per
 1. Launch the VMs by running `multipass launch`. The VMs are initially set up having 2Gb memory, 2 CPU core and 20Gb 
    hard disk which are recommended by the Kubernetes documentation. 
 2. Transfers the `setup-k8s-cluster.sh` script to the VM nodes and executes it on each. See below.
+3. Sets up the kube-config file on both the master and the worker nodes.
 3. Make the worker nodes to join the kubernetes master (_controlplane_) node.
 This script can be run as:
 ```shell
-launch_vm.sh master_node worker_node0 worker_node1
+launch_vm.sh --nodes master_node,worker_node0,worker_node1
 ```
-in which the first parameter is the name of the master node and the subsequent parameters are the names of the worker 
+in which the first parameter is the name of the master node and the subsequent parameters are the names of the worker
 nodes. You can specify arbitrary number of worker nodes.
+
+There are other optional arguments to the `launch_vm.sh`. Running the `launch_vm.sh --help` will print all the parameters
+that can be used with the script.
+```bash
+> /launch_vm.sh --help
+Usage: launch_vm.sh [OPTIONS]
+
+This script automates the setup of a Kubernetes cluster on Multipass nodes.
+
+Options:
+  -v, --version <ver>    Specify Kubernetes version (e.g. v1.31). Default is v1.34.
+  -n, --nodes <list>     Specify the name of the nodes as a comma separated list. The first one will be the "master" kubernetes node.
+  -m, --mem              Specify the desired memory of each node (e.g. 1G). Default is 2G
+  -c, --cpu              Specify the number of cpu cores for each node. Default is 2.
+  -d, --disk             Specify the size of the hard disk for each node (e.g. 5G). Default is 20G.
+  -h, --help             Display this help message and exit
+
+All the arguments except the --nodes one are optional.
+Examples:
+  launch_vm.sh --version v1.31  --nodes kmaster,knode0,knode1
+  launch_vm.sh --nodes kmaster,knode0,knode1
+  launch_vm.sh --nodes kmaster,knode0,knode1 -c 1 -d 1G --mem 500M
+  launch_vm.sh -h
+```
 
 ### setup-k8s-cluster.sh
 This script is transfered to the VM nodes and run on each node using _multipass_ command. It perform the following tasks: 
@@ -58,4 +83,21 @@ This script is transfered to the VM nodes and run on each node using _multipass_
 4. Installs the *Calico* on the master node. Calico is a widely used *Container Network Interface (CNI) plugin* for 
    Kubernetes that provides high-performance network connectivity and advanced network policy enforcement between 
    containers and nodes.For further details regarding _Calico_, please go to [Calico](https://www.tigera.io/project-calico/).
+This script is not meant to be invoked manually.
+
+## Installing additional tools
+After setting up the k8s cluster you can install additional tools on the nodes by invoking:
+```bash
+./install-additional-tools.sh --nodes kmaster,knode0,knode1
+```
+At the moment this script installs the following tools:
+* etcdctl version v3.5.21
+* crictl version v1.31.1
+* helm latest version
+* kubectx version v0.9.5
+* kubens version v0.9.5
+
+When you install another version of kubernetes than the default (v1.34), you need to make sure that the versions of
+the additional tools gets updated too.
+
 

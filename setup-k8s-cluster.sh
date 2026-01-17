@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -eu
+
 # Define global variables with default values
 K8S_VERSION=""
 IS_MASTER=false
@@ -159,7 +161,6 @@ parse_args() {
     # (Not strictly needed here as we have no positional arguments, but good practice)
     shift $((OPTIND - 1))
 }
-
 
 # ----------------------------------------------------------------------
 # Function: main
